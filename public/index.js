@@ -15,6 +15,7 @@ window.onload = () => {
   stream => {
     console.log(stream)
     video.src = vendorURL.createObjectURL(stream)
+    console.log(video.src)
   },
   err => console.log(err))
 }
