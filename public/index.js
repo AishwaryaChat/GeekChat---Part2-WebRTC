@@ -1,21 +1,27 @@
 window.onload = () => {
-  let video = document.getElementById('video')
-  const vendorURL = URL || window.webkitURL
+  const video = document.getElementById('video')
+  const localURL = URL || window.webkitURL
 
   navigator.getMedia = navigator.getUserMedia ||
                        navigator.webkitGetUserMedia ||
                        navigator.mozGetUserMedia ||
                        navigator.msGetUserMedia
 
-  // Capture video
-  navigator.getMedia({
+  // Constraints
+  const constraints = {
     video: true,
-    audio: false
-  },
-  stream => {
-    console.log(stream)
-    video.src = vendorURL.createObjectURL(stream)
-    console.log(video.src)
-  },
-  err => console.log(err))
+    audio: true
+  }
+
+  const successCB = localMediaStream => {
+    window.stream = localMediaStream
+    video.src = localURL.createObjectURL(localMediaStream)
+  }
+
+  const errorCB = error => {
+    console.log('navigator.getUserMedia error: ', error)
+  }
+
+  // Capture video
+  navigator.getMedia(constraints, successCB, errorCB)
 }
