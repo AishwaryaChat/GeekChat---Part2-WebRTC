@@ -6,8 +6,13 @@
     <link href='style.css' rel='stylesheet'/>
   </head>
   <body>
-    <div class='video-area'>
-      <video id='video' autoplay></video>
+    <video id="localVideo" autoplay muted></video>
+    <video id="remoteVideo" autoplay muted></video>
+
+    <div>
+      <button id="startButton">Start</button>
+      <button id="callButton">Call</button>
+      <button id="hangupButton">Hang Up</button>
     </div>
     <script src='index.js' charset='utf-8'></script>
   </body>
