@@ -1,11 +1,32 @@
-.video-area {
-  width: 400px;
-  background-color: #ccc;
-  border: 5px solid #ddd;
-  margin: 0 auto;
+html, body {
+  padding: 0px;
+  margin: 0px;
+  font-family: "Arial","Helvetica",sans-serif;
 }
-
-#video {
-  width: 400px;
-  height: 300px;
+#loading_state {
+  position: absolute;
+  top: 45%;
+  left: 0px;
+  width: 100%;
+  font-size: 20px;
+  text-align: center;
+}
+#open_call_state {
+  display: none;
+}
+#local_video {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 160px;
+  height: 120px;
+  background: #333333;
+}
+#remote_video {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 1024px;
+  height: 768px;
+  background: #999999;
 }
