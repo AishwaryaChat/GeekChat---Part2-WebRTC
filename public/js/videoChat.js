@@ -20,16 +20,38 @@ const createPeerConnection = () => {
   // Create an RTCPeerConnection which knows to use our chosen
   // STUN server.
   myPeerConnection = new RTCPeerConnection({iceServers: [{'urls': 'stun:' + stunServer}]})
+
+  myPeerConnection.onicecandidate = handleICECandidateEvent
+  myPeerConnection.onaddstream = handleAddStreamEvent // to add remote stream on local remoteVideo element, one a stream is received
+}
+
+const handleICECandidateEvent = event => {
+  console.log('handleICECandidateEvent', event)
+  if(event.candidate) {
+    sendToServer({
+      type: 'new-ice-candidate',
+      target: selectedUser,
+      candidate: event.candidate
+    })
+  }
+}
+
+const handleAddStreamEvent = event => {
+  connectStreamToSrc(event.stream, remoteVideo)
 }
 
 const gotStream = stream => {
   connectStreamToSrc(stream, localVideo)
   myPeerConnection.addStream(stream)
-  console.log(myPeerConnection)
 }
 
 const errorStream = error => {
   console.log(error)
   // close video call if an error happens
   // closeVideoCall()
+}
+
+const sendToServer = msg => {
+  msg = JSON.stringify(msg)
+  socket.emit('message', msg)
 }
