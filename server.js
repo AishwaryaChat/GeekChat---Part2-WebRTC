@@ -47,8 +47,7 @@ io.sockets.on('connection', socket => {
       socket.username = userName
       users.push({
         id: socket.id,
-        name: socket.username,
-        msgs: []
+        name: socket.username
       })
       updateUsernames()
     }
@@ -56,24 +55,18 @@ io.sockets.on('connection', socket => {
 
   // video chat
   socket.on('message', msg => {
-    console.log('userssssssssss', users)
+    console.log('usersssssss', users)
+    console.log('msg-type', msg.type, msg.target)
     let targetID = ''
     users.map(user => {
-      if (user.name !== msg.name) {
+      if (user.name !== msg.target) {
         targetID = user.id
       }
     })
-    console.log('user', targetID, 'msg-type', msg)
-    switch (msg.type) {
-      case 'video-offer':
-        io.sockets.in(targetID).emit('accept video', msg)
-        break
-      case 'video-answer':
-        io.sockets.in(targetID).emit('accept answer', msg)
-        break
-      default:
-        console.log('default')
-        break
+    if (targetID !== '') {
+      // console.log('userssssss', users)
+      // console.log('targetID', targetID, 'msg-type', msg)
+      io.sockets.in(targetID).emit('message', msg)
     }
   })
 

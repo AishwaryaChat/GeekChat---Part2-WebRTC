@@ -3,7 +3,7 @@ const startButton = document.getElementById('start_call')
 const remoteVideo = document.getElementById('remote_video')
 const localVideo = document.getElementById('local_video')
 
-const constraints = {video: 'true', audio: 'true'}
+const constraints = {video: 'true'}
 let myPeerConnection = null
 var targetUsername = null
 let myHostname = window.location.hostname
@@ -13,14 +13,20 @@ startButton.onclick = () => {
 
   createPeerConnection() // create a RTCPeerConnection object to make a call
 
-  getUserMedia(constraints, gotStream, errorStream)
+  navigator.mediaDevices.getUserMedia(constraints)
+  .then(stream => {
+    localVideo.srcObject = stream
+    myPeerConnection.addStream(stream)
+  })
+  .catch(error => console.log(error))
+  // getUserMedia(constraints, gotStream, errorStream)
 }
 
 const createPeerConnection = () => {
   // console.log('inside createPeerConnection, setting up connection')
   // Create an RTCPeerConnection which knows to use our chosen
   // STUN server.
-  myPeerConnection = new RTCPeerConnection({iceServers: [{'urls': 'stun:' + stunServer}]})
+  myPeerConnection = new RTCPeerConnection({iceServers: [{'urls': 'stun:stun.l.google.com:19302'}]})
 
   myPeerConnection.onicecandidate = handleICECandidateEvent
   myPeerConnection.onaddstream = handleAddStreamEvent // to add remote stream on local remoteVideo element, one a stream is received
@@ -39,7 +45,7 @@ const handleICECandidateEvent = event => {
 }
 
 const handleAddStreamEvent = event => {
-  connectStreamToSrc(event.stream, remoteVideo)
+  remoteVideo.srcObject = event.stream
 }
 
 const handleNegotiationNeededEvent = event => {
@@ -53,47 +59,14 @@ const handleNegotiationNeededEvent = event => {
       sdp: myPeerConnection.localDescription
     })
   })
-  .catch(reportError)
+  .catch(error => {
+    console.log(error)
+    myPeerConnection.close()
+  })
 }
 
 const reportError = error => {
   console.log(('Error ' + error.name + ': ' + error.message))
-}
-
-socket.on('accept video', msg => {
-  switch(msg.type) {
-    case 'video-offer': // Invitation and offer to chat
-        handleVideoOfferMsg(msg)
-        break
-  }
-})
-
-const handleVideoOfferMsg = msg => {
-  targetUsername = msg.name
-  createPeerConnection()
-  const remoteDescription = new RTCSessionDescription(msg.sdp)
-  myPeerConnection.setRemoteDescription(remoteDescription)
-  .then(() => getUserMedia(constraints))
-  .then(stream => {
-    localVideo.srcObject = stream
-    return myPeerConnection.addStream(stream)
-  })
-  .then(() => myPeerConnection.createAnswer())
-  .then(answer => myPeerConnection.setLocalDescription(answer))
-  .then(() => {
-    sendToServer({
-      name: userName.id,
-      target: targetUsername,
-      type: 'video-answer',
-      sdp: myPeerConnection.localDescription
-    })
-  })
-  .catch(error => console.log(error))
-}
-
-const gotStream = stream => {
-  connectStreamToSrc(stream, localVideo)
-  myPeerConnection.addStream(stream)
 }
 
 const errorStream = error => {
@@ -104,6 +77,103 @@ const errorStream = error => {
 
 const sendToServer = msg => {
   console.log(msg.type)
-  msg = JSON.stringify(msg)
   socket.emit('message', msg)
+}
+
+socket.on('message', msg => {
+  switch (msg.type) {
+    case 'new-ice-candidate':
+      handleNewICECandidateMsg(msg)
+    break
+
+    case 'video-offer':
+      handleVideoOfferMsg(msg)
+    break
+
+    case 'video-answer':
+      handleVideoAnswerMsg(msg)
+    break
+
+    default:
+      console.log('Nothing Matched')
+    break
+  }
+})
+
+// A new ICE candidate has been received from the other peer. Call
+// RTCPeerConnection.addIceCandidate() to send it along to the
+// local ICE framework.
+const handleNewICECandidateMsg = msg => {
+  console.log('inside handleNewICECandidateMsg', msg.candidate)
+  const candidate = new RTCIceCandidate(msg.candidate)
+  myPeerConnection.addIceCandidate(candidate)
+  .catch(error => {
+    console.log(error)
+    myPeerConnection.close()
+  })
+}
+
+const handleVideoOfferMsg = msg => {
+  videoArea.style.display = 'block'
+  targetUsername = msg.name
+  createPeerConnection()
+  if (myPeerConnection !== null) {
+    const remoteDescription = new RTCSessionDescription(msg.sdp)
+    myPeerConnection.setRemoteDescription(remoteDescription)
+    .then(() => navigator.mediaDevices.getUserMedia(constraints))
+    .then(stream => {
+      localVideo.srcObject = stream
+      myPeerConnection.addStream(stream)
+    })
+    .then(() => myPeerConnection.createAnswer())
+    .then(answer => myPeerConnection.setLocalDescription(answer))
+    .then(() => {
+      sendToServer({
+        name: userName.id,
+        target: targetUsername,
+        type: 'video-answer',
+        sdp: myPeerConnection.localDescription
+      })
+    })
+    .catch(error => {
+      console.log(error)
+      myPeerConnection.close()
+    })
+  }
+  // .then(() => getUserMedia(constraints,
+  //   stream => {
+  //     localVideo.srcObject = stream
+  //     myPeerConnection.addStream(stream)
+  //     myPeerConnection.createAnswer()
+  //     .then(answer => myPeerConnection.setLocalDescription(answer))
+  //     .then(() => {
+        // sendToServer({
+        //   name: userName.id,
+        //   target: targetUsername,
+        //   type: 'video-answer',
+        //   sdp: myPeerConnection.localDescription
+        // })
+  //     })
+  //     .catch(error => console.log(error))
+  //   },
+  //   error => console.log(error)
+  // ))
+}
+
+// Responds to the "video-answer" message sent to the caller
+// once the callee has decided to accept our request to talk.
+const handleVideoAnswerMsg = msg => {
+  console.log('inside handleVideoAnswerMsg')
+  createPeerConnection()
+  const remoteDescription = new RTCSessionDescription(msg.sdp)
+  myPeerConnection.setRemoteDescription(msg.sdp)
+  .catch(error => {
+    console.log(error)
+    myPeerConnection.close()
+  })
+}
+
+const gotStream = stream => {
+  connectStreamToSrc(stream, localVideo)
+  myPeerConnection.addStream(stream)
 }
