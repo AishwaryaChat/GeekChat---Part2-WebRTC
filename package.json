@@ -19,10 +19,9 @@
   "homepage": "https://github.com/AishwaryaChat/GeekChat---Part2-WebRTC#readme",
   "dependencies": {
     "express": "^4.15.3",
-    "node-static": "^0.7.9",
-    "socket.io": "^2.0.3",
-    "uuid": "^3.1.0",
-    "websocket": "^1.0.24"
+    "peer": "^0.2.8",
+    "peerjs": "^0.3.14",
+    "socket.io": "^2.0.3"
   },
   "devDependencies": {}
 }

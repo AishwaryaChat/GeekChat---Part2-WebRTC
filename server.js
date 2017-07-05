@@ -4,6 +4,12 @@ const path = require('path')
 const server = require('http').createServer(app)
 const io = require('socket.io').listen(server)
 
+const srv = server.listen(3000)
+
+app.use('/peerjs', require('peer').ExpressPeerServer(srv, {
+	debug: true
+}))
+
 const users = []
 const connections = []
 
@@ -38,35 +44,20 @@ io.sockets.on('connection', socket => {
   })
 
   // New users
-  socket.on('new user', (userName, cb) => {
-    let fusers = users.filter(user => user.name === userName)
+  socket.on('new user', (obj, cb) => {
+		console.log('new user', obj)
+    let fusers = users.filter(user => user.name === obj.name)
     if (fusers[0]) {
       cb(false)
     } else {
       cb(true)
-      socket.username = userName
+      socket.username = obj.name
       users.push({
         id: socket.id,
-        name: socket.username
+        name: socket.username,
+        peerID: obj.peerID
       })
       updateUsernames()
-    }
-  })
-
-  // video chat
-  socket.on('message', msg => {
-    console.log('usersssssss', users)
-    console.log('msg-type', msg.type, msg.target)
-    let targetID = ''
-    users.map(user => {
-      if (user.name !== msg.target) {
-        targetID = user.id
-      }
-    })
-    if (targetID !== '') {
-      // console.log('userssssss', users)
-      // console.log('targetID', targetID, 'msg-type', msg)
-      io.sockets.in(targetID).emit('message', msg)
     }
   })
 

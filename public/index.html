@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <title>IO Chat</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-    <script src='js/adapter.js' type='text/javascript'></script>
-    <!-- <script src='js/webrtc_polyfill.js' type='text/javascript'></script> -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.14/peer.js' type='text/javascript'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.14/peer.min.js' type='text/javascript'></script>
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
@@ -14,9 +14,9 @@
         <div class='col-md-12'>
           <div class='form-group'>
             <label>Enter Username</label>
-            <input class='form-control' id='userName' />
+            <input class='form-control' id='userName'/>
             <br />
-            <input type='submit' class='btn btn-primary' id='submitUser' value='Login'/>
+            <input type='submit' class='btn btn-primary' id='login' value='Login'/>
           </div>
         </div>
       </div>
@@ -31,11 +31,11 @@
         <div class='col-md-8'>
           <div class='chat well' id='chat'>
             <div id='video-area'>
-              <video id="remote_video" autoplay="true"></video>
-              <video id="local_video" autoplay="true"></video><br />
+              <video id="remote-video" autoplay="true"></video>
+              <video id="local-video" autoplay="true"></video><br />
             </div>
-            <button id='start_call'>Start Call</button>
-            <button id='end_call'>End Call</button>
+            <button id='start-call'>Start Call</button>
+            <button id='end-call'>End Call</button>
           </div>
         </div>
       </div>
@@ -43,5 +43,4 @@
   </body>
   <script src='/socket.io/socket.io.js' type='text/javascript'></script>
   <script src='js/index.js' type='text/javascript'></script>
-  <script src='js/videoChat.js' type='text/javascript'></script>
 </html>
