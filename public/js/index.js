@@ -1,7 +1,7 @@
 let selectedUser = ''
+const socket = io.connect()
 
 window.onload = () => {
-  const socket = io.connect()
   const userArea = document.getElementById('userArea')
   const messageArea = document.getElementById('messageArea')
   const submitUser = document.getElementById('submitUser')
