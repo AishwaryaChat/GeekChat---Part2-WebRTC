@@ -35,7 +35,7 @@ const peerObj = {
   secure: false
 }
 
-const constraints = {video: true}
+const constraints = {video: true, audio: true}
 
 loginButton.onclick = e => {
   e.preventDefault()
