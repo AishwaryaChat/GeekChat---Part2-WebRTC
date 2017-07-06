@@ -13,8 +13,6 @@ const userName = document.getElementById('userName')
 const usersList = document.getElementById('users')
 const user = document.getElementById('user')
 const chat = document.getElementById('chat')
-const remoteVideo = document.getElementById('remote-video')
-const localVideo = document.getElementById('local-video')
 const videoArea = document.getElementById('video-area')
 const startCallButton = document.getElementById('start-call')
 const endCallButton = document.getElementById('end-call')
@@ -24,7 +22,7 @@ let name = ''
 let conn = {}
 
 const peerObj = {
-  host: '192.168.0.111',
+  host: 'localhost',
   port: 3000,
   path: '/peerjs',
   debug: 3,
@@ -33,7 +31,8 @@ const peerObj = {
     { url: 'turn:numb.viagenie.ca',
       credential: 'muazkh',
       username: 'webrtc@live.com' }
-  ]}
+  ]},
+  secure: false
 }
 
 const constraints = {video: true}
@@ -116,7 +115,7 @@ const onReceiveCall = (call) => {
   .catch(error => console.log(error))
 }
 
-// accept answer from calle
+// accept answer from callee
 const acceptAnswer = () => {
   console.log('peerIDdddddddddddddddddd', peerID)
   let call = peer.call(peerID, window.localStream)
@@ -135,6 +134,10 @@ const onReceiveStream = (stream, elementID) => {
   var video = document.getElementById(elementID)
   video.srcObject = stream
   window.peerStream = stream
+}
+
+endCallButton.onclick = () => {
+  peer.on('dis')
 }
 
 socket.on('get users', users => {
