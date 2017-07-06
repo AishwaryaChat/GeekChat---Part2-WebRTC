@@ -46,7 +46,6 @@ loginButton.onclick = e => {
 
 const initiatePeerConnection = () => {
   peer.on('open', () => {
-    // userID.innerHTML = peer.id
     socket.emit('new user',
       {name: userName.value,
         peerID: peer.id},
@@ -61,6 +60,9 @@ const initiatePeerConnection = () => {
       videoArea.style.display = 'block'
       document.getElementById('connected-peer').innerHTML = 'Connected to: ' + connection.metadata.username
     }
+  })
+  peer.on('call', call => {
+    onReceiveCall(call)
   })
 }
 
@@ -79,6 +81,7 @@ startCallButton.onclick = () => {
   navigator.mediaDevices.getUserMedia(constraints)
   .then(gotStream)
   .then(() => sendOffer())
+  .then(() => acceptAnswer())
   .catch(error => {
     console.log(error)
     alert('An error occured. Please try again')
@@ -94,6 +97,33 @@ const sendOffer = () => {
       'username': name
     }})
   }
+}
+
+// accept offer from caller and create an answer for caller
+const onReceiveCall = (call) => {
+  navigator.mediaDevices.getUserMedia(constraints)
+  .then(gotStream)
+  .then(() => {
+    console.log('window.localStreammmmmmmmmm', window.localStream)
+    call.answer(window.localStream)
+  })
+  .then(() => {
+    call.on('stream', stream => {
+      window.peerStream = stream
+      onReceiveStream(stream, 'remote-video')
+    })
+  })
+  .catch(error => console.log(error))
+}
+
+// accept answer from calle
+const acceptAnswer = () => {
+  console.log('peerIDdddddddddddddddddd', peerID)
+  let call = peer.call(peerID, window.localStream)
+  call.on('stream', stream => {
+    window.peerStream = stream
+    onReceiveStream(stream, 'remote-video')
+  })
 }
 
 const gotStream = stream => {
