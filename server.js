@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const path = require('path')
 const server = require('http').createServer(app)
+const fs = require('fs')
 const ExpressPeerServer = require('peer').ExpressPeerServer
 const io = require('socket.io').listen(server)
 
@@ -12,7 +13,7 @@ app.use('/peerjs', ExpressPeerServer(server, {
 const users = []
 const connections = []
 
-server.listen(3000, () => {
+server.listen(443, () => {
   console.log('server running')
 })
 
@@ -73,3 +74,13 @@ io.sockets.on('connection', socket => {
     }
   }
 })
+
+// const options = {
+//   ssl: {
+//     certificate: fs.readFile('/my-cert.pem')
+//   },
+// 	port: 8000
+// }
+
+// const PeerServer = require('peer').PeerServer
+// PeerServer(options, {})

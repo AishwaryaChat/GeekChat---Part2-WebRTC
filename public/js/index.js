@@ -23,7 +23,7 @@ let conn = {}
 
 const peerObj = {
   host: '0.0.0.0',
-  port: 3000,
+  port: 443,
   path: '/peerjs',
   debug: 3,
   config: {icerServers: [
