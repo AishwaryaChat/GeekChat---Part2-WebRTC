@@ -22,8 +22,8 @@ let name = ''
 let conn = {}
 
 const peerObj = {
-  host: 'localhost',
-  port: 3000,
+  host: '0.0.0.0',
+  port: 8000,
   path: '/peerjs',
   debug: 3,
   config: {icerServers: [
@@ -31,11 +31,10 @@ const peerObj = {
     { url: 'turn:numb.viagenie.ca',
       credential: 'muazkh',
       username: 'webrtc@live.com' }
-  ]},
-  secure: false
+  ]}
 }
 
-const constraints = {video: true, audio: true}
+const constraints = {video: true}
 
 loginButton.onclick = e => {
   e.preventDefault()
