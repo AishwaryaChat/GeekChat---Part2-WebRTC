@@ -34,11 +34,11 @@ const peerObj = {
   ]}
 }
 
-const constraints = {video: true}
+const constraints = {video: true, audio: true}
 
 loginButton.onclick = e => {
   e.preventDefault()
-  peer = new Peer(peerObj)
+  peer = new Peer({host:'peerjs-server.herokuapp.com', secure:true, port:443})
   initiatePeerConnection()
 }
 

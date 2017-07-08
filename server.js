@@ -2,18 +2,12 @@ const express = require('express')
 const app = express()
 const path = require('path')
 const server = require('http').createServer(app)
-const fs = require('fs')
-const ExpressPeerServer = require('peer').ExpressPeerServer
 const io = require('socket.io').listen(server)
-
-app.use('/peerjs', ExpressPeerServer(server, {
-	debug: true
-}))
 
 const users = []
 const connections = []
 
-server.listen(443, () => {
+server.listen(3000, () => {
   console.log('server running')
 })
 
