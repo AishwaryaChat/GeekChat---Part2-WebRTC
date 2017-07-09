@@ -1,6 +1,1 @@
 node_modules
-certificate.crt
-dummyServer.js
-myChat.js
-privateKey.key
-server.CA.key
